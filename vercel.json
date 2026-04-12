@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "PAYSTACK_SECRET_KEY": "@paystack_secret",
+    "NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY": "@paystack_public_key",
+    "JWT_SECRET": "@jwt_secret",
+    "OMADA_CONTROLLER_URL": "@omada_url",
+    "OMADA_USERNAME": "@omada_username",
+    "OMADA_PASSWORD": "@omada_password",
+    "OMADA_SITE_ID": "@omada_site_id"
+  }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test OmniConnect Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>OmniConnect Server Test</h1>
+    <p>This page helps test if your Next.js server is running properly on Microsoft Edge.</p>
+    
+    <div class="test-section">
+        <h3>Test 1: Basic Server Connection</h3>
+        <button onclick="testBasicConnection()">Test Connection</button>
+        <div id="basic-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: API Endpoint</h3>
+        <button onclick="testAPI()">Test API</button>
+        <div id="api-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Main Page</h3>
+        <button onclick="openMainPage()">Open Main Page</button>
+        <button onclick="openMainPageWithParams()">Open with Parameters</button>
+        <div id="page-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Manual Links</h3>
+        <p>Try these links directly:</p>
+        <ul>
+            <li><a href="http://localhost:9002" target="_blank">http://localhost:9002</a></li>
+            <li><a href="http://localhost:9002/?clientMac=AA:BB:CC:DD:EE:FF" target="_blank">http://localhost:9002/?clientMac=AA:BB:CC:DD:EE:FF</a></li>
+            <li><a href="http://localhost:9002/?clientMac=AA:BB:CC:DD:EE:FF&siteId=test-business" target="_blank">http://localhost:9002/?clientMac=AA:BB:CC:DD:EE:FF&siteId=test-business</a></li>
+            <li><a href="http://localhost:9002/admin" target="_blank">http://localhost:9002/admin</a></li>
+        </ul>
+    </div>
+
+    <script>
+        async function testBasicConnection() {
+            const result = document.getElementById('basic-result');
+            try {
+                const response = await fetch('http://localhost:9002');
+                if (response.ok) {
+                    result.innerHTML = '<div class="success">Server is running! Status: ' + response.status + '</div>';
+                } else {
+                    result.innerHTML = '<div class="error">Server responded with status: ' + response.status + '</div>';
+                }
+            } catch (error) {
+                result.innerHTML = '<div class="error">Cannot connect to server: ' + error.message + '</div>';
+            }
+        }
+
+        async function testAPI() {
+            const result = document.getElementById('api-result');
+            try {
+                const response = await fetch('http://localhost:9002/api/packages/public');
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = '<div class="success">API working! Found ' + (data.data?.length || 0) + ' packages</div>';
+                } else {
+                    result.innerHTML = '<div class="error">API error: ' + response.status + '</div>';
+                }
+            } catch (error) {
+                result.innerHTML = '<div class="error">API error: ' + error.message + '</div>';
+            }
+        }
+
+        function openMainPage() {
+            window.open('http://localhost:9002', '_blank');
+            document.getElementById('page-result').innerHTML = '<div class="success">Opened main page in new tab</div>';
+        }
+
+        function openMainPageWithParams() {
+            window.open('http://localhost:9002/?clientMac=AA:BB:CC:DD:EE:FF&siteId=test-business', '_blank');
+            document.getElementById('page-result').innerHTML = '<div class="success">Opened main page with parameters in new tab</div>';
+        }
+    </script>
+</body>
+</html>

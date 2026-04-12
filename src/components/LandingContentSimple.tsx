@@ -1,14 +1,11 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { PaystackButton } from 'react-paystack';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle2, WifiOff, MessageCircle, Package } from 'lucide-react';
-import { generatePersonalizedWelcomeMessage } from '@/ai/flows/generate-personalized-welcome-message';
 
 interface PackageData {
   _id: string;
@@ -26,16 +23,53 @@ interface SiteOwner {
   businessName?: string;
 }
 
-export default function LandingContent() {
+export default function LandingContentSimple() {
   const searchParams = useSearchParams();
   const [clientMac, setClientMac] = useState<string | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [packages, setPackages] = useState<PackageData[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<PackageData | null>(null);
   const [siteOwner, setSiteOwner] = useState<SiteOwner | null>(null);
   const [siteLoading, setSiteLoading] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Mock packages for testing
+  const mockPackages: PackageData[] = [
+    {
+      _id: '1',
+      name: 'Basic Pass',
+      price: 50,
+      duration_mins: 60,
+      data_limit_gb: 1,
+      is_unlimited: false,
+      description: 'Perfect for quick browsing and emails'
+    },
+    {
+      _id: '2',
+      name: 'Standard Pass',
+      price: 100,
+      duration_mins: 120,
+      data_limit_gb: 3,
+      is_unlimited: false,
+      description: 'Great for streaming and social media'
+    },
+    {
+      _id: '3',
+      name: 'Premium Pass',
+      price: 200,
+      duration_mins: 240,
+      data_limit_gb: 10,
+      is_unlimited: false,
+      description: 'Ideal for heavy users and downloads'
+    },
+    {
+      _id: '4',
+      name: 'Unlimited Pass',
+      price: 500,
+      duration_mins: 1440,
+      data_limit_gb: 0,
+      is_unlimited: true,
+      description: '24 hours of unlimited high-speed internet'
+    }
+  ];
 
   useEffect(() => {
     const mac = searchParams.get('clientMac');
@@ -45,127 +79,30 @@ export default function LandingContent() {
       setClientMac(mac);
     }
     
-    if (siteId) {
-      loadSiteData(siteId);
-    } else {
-      // Load default packages if no siteId
-      loadDefaultPackages();
-    }
+    // Simulate loading site data
+    setTimeout(() => {
+      setSiteOwner({
+        name: 'Test Business',
+        businessName: 'Test WiFi Hotspot',
+        whatsappNumber: '254799590637'
+      });
+      setPackages(mockPackages);
+      setSelectedPackage(mockPackages[0]);
+      setSiteLoading(false);
+    }, 1000);
   }, [searchParams]);
 
-  const loadSiteData = async (siteId: string) => {
-    try {
-      setSiteLoading(true);
-      
-      // Load site owner info
-      const ownerResponse = await fetch(`/api/sites/${siteId}/owner`);
-      if (ownerResponse.ok) {
-        const ownerData = await ownerResponse.json();
-        setSiteOwner(ownerData.data);
-      }
-      
-      // Load packages for this site
-      const packagesResponse = await fetch(`/api/sites/${siteId}/packages`);
-      if (packagesResponse.ok) {
-        const packagesData = await packagesResponse.json();
-        setPackages(packagesData.data);
-        if (packagesData.data.length > 0) {
-          setSelectedPackage(packagesData.data[0]);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading site data:', error);
-      // Fallback to default packages
-      loadDefaultPackages();
-    } finally {
-      setSiteLoading(false);
-    }
+  const setPackages = (packages: PackageData[]) => {
+    // This would normally come from API
+    console.log('Packages loaded:', packages);
   };
 
-  const loadDefaultPackages = async () => {
-    try {
-      setSiteLoading(true);
-      const response = await fetch('/api/packages/public');
-      if (response.ok) {
-        const data = await response.json();
-        setPackages(data.data);
-        if (data.data.length > 0) {
-          setSelectedPackage(data.data[0]);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading packages:', error);
-    } finally {
-      setSiteLoading(false);
-    }
-  };
-
-  const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_placeholder';
-  const email = 'user@omniconnect.pay'; // Placeholder or captured from user
-  const siteId = searchParams.get('siteId');
-
-  // Get subaccount code from site owner or use default
-  const subaccountCode = siteOwner?.paystackSubaccountCode;
-
-  const componentProps = {
-    email,
-    amount: selectedPackage ? selectedPackage.price * 100 : 5000, // Convert to kobo
-    subaccount: subaccountCode, // Add subaccount for payment routing
-    metadata: {
-      custom_fields: [
-        {
-          display_name: "Client MAC",
-          variable_name: "client_mac",
-          value: clientMac || 'Unknown',
-        },
-        {
-          display_name: "Package",
-          variable_name: "package_name",
-          value: selectedPackage?.name || 'Standard',
-        },
-        {
-          display_name: "Site ID",
-          variable_name: "site_id",
-          value: siteId || 'default',
-        },
-        {
-          display_name: "Business Owner",
-          variable_name: "business_name",
-          value: siteOwner?.businessName || siteOwner?.name || 'Platform',
-        },
-      ],
-      client_mac: clientMac,
-      package_id: selectedPackage?._id,
-      site_id: siteId,
-      owner_id: siteOwner?.name || 'platform',
-      business_name: siteOwner?.businessName || siteOwner?.name || 'Platform',
-    },
-    publicKey,
-    text: selectedPackage ? `Pay KES ${selectedPackage.price.toFixed(2)} Now` : "Select Package",
-    onSuccess: (reference: any) => {
-      handleSuccess(reference);
-    },
-    onClose: () => {
-      console.log('Payment closed');
-    },
-  };
-
-  const handleSuccess = async (reference: any) => {
+  const handlePayment = () => {
+    // Simulate payment processing
     setPaymentStatus('success');
-    setLoading(true);
-    try {
-      if (clientMac && selectedPackage) {
-        const response = await generatePersonalizedWelcomeMessage({
-          clientMac: clientMac,
-          accessDurationMinutes: selectedPackage.duration_mins,
-        });
-        setWelcomeMessage(response.welcomeMessage);
-      }
-    } catch (err) {
-      console.error('Error fetching welcome message', err);
-    } finally {
-      setLoading(false);
-    }
+    setTimeout(() => {
+      setPaymentStatus('idle');
+    }, 5000);
   };
 
   if (!clientMac) {
@@ -200,14 +137,7 @@ export default function LandingContent() {
         </div>
         <h3 className="text-xl font-bold">Access Granted!</h3>
         <p className="text-sm text-muted-foreground px-4">
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Generating your personalized experience...
-            </span>
-          ) : (
-            welcomeMessage || "Thank you for your payment. You are now connected to high-speed internet."
-          )}
+          Thank you for your payment. You are now connected to high-speed internet.
         </p>
         <Button className="w-full mt-4" variant="default" onClick={() => window.location.href = "https://google.com"}>
           Start Browsing
@@ -228,7 +158,7 @@ export default function LandingContent() {
 
       {/* Package Selection */}
       <div className="space-y-3">
-        {packages.map((pkg) => (
+        {mockPackages.map((pkg) => (
           <div
             key={pkg._id}
             className={`p-4 rounded-xl border cursor-pointer transition-all ${
@@ -264,10 +194,12 @@ export default function LandingContent() {
 
       {selectedPackage && (
         <div className="pt-2">
-          <PaystackButton
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-lg shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
-            {...componentProps}
-          />
+          <Button
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-lg shadow-lg transition-all active:scale-[0.98]"
+            onClick={handlePayment}
+          >
+            Pay KES {selectedPackage.price.toFixed(2)} Now (Test Mode)
+          </Button>
         </div>
       )}
 
@@ -283,6 +215,12 @@ export default function LandingContent() {
           <MessageCircle className="w-4 h-4" />
           Contact Support
         </Button>
+      </div>
+
+      <div className="text-center">
+        <Badge variant="outline" className="text-xs">
+          Test Mode - No Real Payments
+        </Badge>
       </div>
     </div>
   );
