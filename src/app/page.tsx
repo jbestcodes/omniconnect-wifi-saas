@@ -11,7 +11,7 @@ export default function Home() {
           <div className="bg-white/20 p-4 rounded-full mb-4">
             <Wifi className="w-12 h-12" />
           </div>
-          <h1 className="text-3xl font-headline font-bold mb-2">OmniConnect Pay</h1>
+          <h1 className="text-3xl font-headline font-bold mb-2">WiFi Pay</h1>
           <p className="text-primary-foreground/80 font-medium">Fast, Secure High-Speed Wi-Fi</p>
         </div>
 

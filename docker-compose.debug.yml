@@ -12,4 +12,12 @@ services:
       - NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your_key_here
       - PAYSTACK_SECRET_KEY=sk_test_your_key_here
       - MONGODB_URI=mongodb://localhost:27017/omniconnect
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
     restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
