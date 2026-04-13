@@ -1,6 +1,6 @@
 
 import { Suspense } from 'react';
-import LandingContentMinimal from '@/components/LandingContentMinimal';
+import LandingContent from '@/components/LandingContent';
 import { Wifi, ShieldCheck, Zap } from 'lucide-react';
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
 
         <div className="p-8">
           <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
-            <LandingContentMinimal />
+            <LandingContent />
           </Suspense>
 
           <div className="mt-8 space-y-4">
