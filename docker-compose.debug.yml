@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - JWT_SECRET=your-jwt-secret-here
+      - NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your_key_here
+      - PAYSTACK_SECRET_KEY=sk_test_your_key_here
+      - MONGODB_URI=mongodb://localhost:27017/omniconnect
+    restart: unless-stopped
