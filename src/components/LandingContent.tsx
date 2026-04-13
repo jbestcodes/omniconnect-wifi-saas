@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle2, WifiOff, MessageCircle, Package } from 'lucide-react';
-import { generatePersonalizedWelcomeMessage } from '@/ai/flows/generate-personalized-welcome-message';
+// import { generatePersonalizedWelcomeMessage } from '@/ai/flows/generate-personalized-welcome-message';
 
 interface PackageData {
   _id: string;
@@ -155,14 +155,10 @@ export default function LandingContent() {
     setLoading(true);
     try {
       if (clientMac && selectedPackage) {
-        const response = await generatePersonalizedWelcomeMessage({
-          clientMac: clientMac,
-          accessDurationMinutes: selectedPackage.duration_mins,
-        });
-        setWelcomeMessage(response.welcomeMessage);
+        // Simple welcome message without AI
+        const welcomeMsg = `Welcome! Your ${selectedPackage.name} package is now active. Enjoy ${selectedPackage.duration_mins} minutes of high-speed internet access.`;
+        setWelcomeMessage(welcomeMsg);
       }
-    } catch (err) {
-      console.error('Error fetching welcome message', err);
     } finally {
       setLoading(false);
     }
