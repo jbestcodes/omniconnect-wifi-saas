@@ -33,8 +33,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy public folder if it exists
-COPY --from=builder /app/public ./public/ || true
+# Copy public folder
+COPY --from=builder /app/public ./public/
 
 # Set the correct permission for prerender cache
 RUN mkdir -p .next
@@ -42,8 +42,8 @@ RUN chown nextjs:nodejs .next
 
 # Ensure standalone output exists and copy files
 RUN mkdir -p .next/standalone
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./ || true
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static/ || true
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static/
 
 USER nextjs
 
