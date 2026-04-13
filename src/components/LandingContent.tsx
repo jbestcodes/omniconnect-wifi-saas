@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { PaystackButton } from 'react-paystack';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,6 +28,7 @@ interface SiteOwner {
 
 export default function LandingContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [clientMac, setClientMac] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
@@ -205,7 +206,7 @@ export default function LandingContent() {
             welcomeMessage || "Thank you for your payment. You are now connected to high-speed internet."
           )}
         </p>
-        <Button className="w-full mt-4" variant="default" onClick={() => window.location.href = "https://google.com"}>
+        <Button className="w-full mt-4" variant="default" onClick={() => router.push("https://google.com")}>
           Start Browsing
         </Button>
       </div>
