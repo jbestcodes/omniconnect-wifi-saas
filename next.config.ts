@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  output: 'export',
+  // output: 'export', // Commented out for VPS deployment
   images: {
     unoptimized: true,
     remotePatterns: [
