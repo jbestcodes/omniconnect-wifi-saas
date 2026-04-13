@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import LandingContent from '@/components/LandingContent';
 import { Wifi, ShieldCheck, Zap } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
