@@ -7,7 +7,7 @@ import { PaystackButton } from 'react-paystack';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle2, WifiOff, MessageCircle, Package } from 'lucide-react';
+import { Loader2, CheckCircle2, WifiOff, MessageCircle, Package, Wifi } from 'lucide-react';
 // import { generatePersonalizedWelcomeMessage } from '@/ai/flows/generate-personalized-welcome-message';
 
 interface PackageData {
@@ -115,9 +115,48 @@ export default function LandingContent() {
     }
   };
 
+  const siteId = searchParams.get('siteId');
+
+  const handlePayment = async () => {
+    if (!selectedPackage || !clientMac) return;
+    
+    setLoading(true);
+    try {
+      // Simulate payment processing for now
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setPaymentStatus('success');
+      
+      // Simple welcome message
+      const welcomeMsg = `Welcome! Your ${selectedPackage.name} package is now active. Enjoy ${selectedPackage.duration_mins} minutes of high-speed internet access.`;
+      setWelcomeMessage(welcomeMsg);
+      
+      console.log('Authorizing MAC:', clientMac, 'for package:', selectedPackage.name);
+    } catch (error) {
+      setPaymentStatus('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSuccess = async (reference: any) => {
+    setPaymentStatus('success');
+    setLoading(true);
+    try {
+      if (clientMac && selectedPackage) {
+        // Simple welcome message without AI
+        const welcomeMsg = `Welcome! Your ${selectedPackage.name} package is now active. Enjoy ${selectedPackage.duration_mins} minutes of high-speed internet access.`;
+        setWelcomeMessage(welcomeMsg);
+        
+        // Simulate authorization (in real app, this would call your API)
+        console.log('Authorizing MAC:', clientMac, 'for package:', selectedPackage.name);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_placeholder';
   const email = 'user@omniconnect.pay'; // Placeholder or captured from user
-  const siteId = searchParams.get('siteId');
 
   // Get subaccount code from site owner or use default
   const subaccountCode = siteOwner?.paystackSubaccountCode;
@@ -163,23 +202,6 @@ export default function LandingContent() {
     onClose: () => {
       console.log('Payment closed');
     },
-  };
-
-  const handleSuccess = async (reference: any) => {
-    setPaymentStatus('success');
-    setLoading(true);
-    try {
-      if (clientMac && selectedPackage) {
-        // Simple welcome message without AI
-        const welcomeMsg = `Welcome! Your ${selectedPackage.name} package is now active. Enjoy ${selectedPackage.duration_mins} minutes of high-speed internet access.`;
-        setWelcomeMessage(welcomeMsg);
-        
-        // Simulate authorization (in real app, this would call your API)
-        console.log('Authorizing MAC:', clientMac, 'for package:', selectedPackage.name);
-      }
-    } finally {
-      setLoading(false);
-    }
   };
 
   // Show maintenance view if no Omada Controller parameters (for Omada health check)
