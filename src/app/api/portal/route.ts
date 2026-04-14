@@ -17,17 +17,20 @@ export async function GET(req: NextRequest) {
   const ssidName = searchParams.get('ssidName');
   const siteId = searchParams.get('siteId');
   
-  // Redirect to main app with parameters
-  const redirectUrl = new URL('/', req.url);
+  // Redirect to main app with external domain
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://wifipay.site' 
+    : 'http://localhost:3000';
   
+  const externalUrl = new URL(baseUrl);
   // Add all parameters to redirect
-  if (clientMac) redirectUrl.searchParams.set('clientMac', clientMac);
-  if (apMac) redirectUrl.searchParams.set('apMac', apMac);
-  if (ssidName) redirectUrl.searchParams.set('ssidName', ssidName);
-  if (siteId) redirectUrl.searchParams.set('siteId', siteId);
+  if (clientMac) externalUrl.searchParams.set('clientMac', clientMac);
+  if (apMac) externalUrl.searchParams.set('apMac', apMac);
+  if (ssidName) externalUrl.searchParams.set('ssidName', ssidName);
+  if (siteId) externalUrl.searchParams.set('siteId', siteId);
   
-  console.log('🚀 Redirecting to:', redirectUrl.toString());
+  console.log('🚀 Redirecting to external URL:', externalUrl.toString());
   
-  // Redirect to main app
-  return NextResponse.redirect(redirectUrl.toString());
+  // Redirect to external URL
+  return NextResponse.redirect(externalUrl.toString());
 }
