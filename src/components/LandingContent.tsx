@@ -24,12 +24,15 @@ interface SiteOwner {
   name: string;
   whatsappNumber?: string;
   businessName?: string;
+  paystackSubaccountCode?: string;
 }
 
 export default function LandingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [clientMac, setClientMac] = useState<string | null>(null);
+  const [apMac, setApMac] = useState<string | null>(null);
+  const [ssidName, setSsidName] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -40,10 +43,18 @@ export default function LandingContent() {
 
   useEffect(() => {
     const mac = searchParams.get('clientMac');
+    const ap = searchParams.get('apMac');
+    const ssid = searchParams.get('ssidName');
     const siteId = searchParams.get('siteId');
     
     if (mac) {
       setClientMac(mac);
+    }
+    if (ap) {
+      setApMac(ap);
+    }
+    if (ssid) {
+      setSsidName(ssid);
     }
     
     if (siteId) {
@@ -164,6 +175,29 @@ export default function LandingContent() {
       setLoading(false);
     }
   };
+
+  // Show maintenance view if no Omada Controller parameters (for Omada health check)
+  if (!clientMac && !apMac && !ssidName) {
+    return (
+      <div className="text-center py-6">
+        <div className="flex justify-center mb-4">
+          <Wifi className="w-10 h-10 text-primary" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">WiFi Pay Portal</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Welcome to our WiFi payment system. Please connect to our WiFi network to access internet packages.
+        </p>
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Connect to: <span className="font-medium">{ssidName || "WiFi-Pay"}</span>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Access Point: <span className="font-medium">{apMac || "Available"}</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!clientMac) {
     return (
