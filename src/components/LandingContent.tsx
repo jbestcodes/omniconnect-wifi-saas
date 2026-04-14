@@ -66,49 +66,52 @@ export default function LandingContent() {
   }, [searchParams]);
 
   const loadSiteData = async (siteId: string) => {
-    try {
-      setSiteLoading(true);
-      
-      // Load site owner info
-      const ownerResponse = await fetch(`/api/sites/${siteId}/owner`);
-      if (ownerResponse.ok) {
-        const ownerData = await ownerResponse.json();
-        setSiteOwner(ownerData.data);
-      }
-      
-      // Load packages for this site
-      const packagesResponse = await fetch(`/api/sites/${siteId}/packages`);
-      if (packagesResponse.ok) {
-        const packagesData = await packagesResponse.json();
-        setPackages(packagesData.data);
-        if (packagesData.data.length > 0) {
-          setSelectedPackage(packagesData.data[0]);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading site data:', error);
-      // Fallback to default packages
-      loadDefaultPackages();
-    } finally {
-      setSiteLoading(false);
-    }
+    // Use mock data instead of API calls
+    loadMockPackages();
   };
 
   const loadDefaultPackages = async () => {
-    try {
-      setSiteLoading(true);
-      const response = await fetch('/api/packages/public');
-      if (response.ok) {
-        const data = await response.json();
-        setPackages(data.data);
-        if (data.data.length > 0) {
-          setSelectedPackage(data.data[0]);
-        }
+    // Use mock data instead of API calls
+    loadMockPackages();
+  };
+
+  const loadMockPackages = () => {
+    setSiteLoading(false);
+    
+    // Mock packages for testing
+    const mockPackages: PackageData[] = [
+      {
+        _id: '1',
+        name: 'Starter',
+        price: 100,
+        duration_mins: 60,
+        data_limit_gb: 1,
+        is_unlimited: false,
+        description: 'Perfect for quick browsing and emails'
+      },
+      {
+        _id: '2',
+        name: 'Standard',
+        price: 300,
+        duration_mins: 240,
+        data_limit_gb: 5,
+        is_unlimited: false,
+        description: 'Great for streaming and downloads'
+      },
+      {
+        _id: '3',
+        name: 'Premium',
+        price: 500,
+        duration_mins: 480,
+        data_limit_gb: 10,
+        is_unlimited: false,
+        description: 'Best for heavy users and work'
       }
-    } catch (error) {
-      console.error('Error loading packages:', error);
-    } finally {
-      setSiteLoading(false);
+    ];
+
+    setPackages(mockPackages);
+    if (mockPackages.length > 0) {
+      setSelectedPackage(mockPackages[0]);
     }
   };
 
@@ -170,6 +173,9 @@ export default function LandingContent() {
         // Simple welcome message without AI
         const welcomeMsg = `Welcome! Your ${selectedPackage.name} package is now active. Enjoy ${selectedPackage.duration_mins} minutes of high-speed internet access.`;
         setWelcomeMessage(welcomeMsg);
+        
+        // Simulate authorization (in real app, this would call your API)
+        console.log('Authorizing MAC:', clientMac, 'for package:', selectedPackage.name);
       }
     } finally {
       setLoading(false);
